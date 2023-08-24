@@ -65,12 +65,12 @@ def define_date(date):
 
 class GoogleNews:
 
-    def __init__(self,lang="en",period="",start="",end="",encode="utf-8",region=None):
+    def __init__(self,lang="en",period="",start="",end="",sbd=0,encode="utf-8",region=None):
         self.__texts = []
         self.__links = []
         self.__results = []
         self.__totalcount = 0
-        self.user_agent = 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:64.0) Gecko/20100101 Firefox/64.0'
+        self.user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'
         self.__lang = lang
         if region:
             self.accept_language= lang + '-' + region + ',' + lang + ';q=0.9'
@@ -80,6 +80,7 @@ class GoogleNews:
         self.__period = period
         self.__start = start
         self.__end = end
+        self.__sbd = sbd
         self.__encode = encode
         self.__exception = False
         self.__version = '1.6.9'
@@ -154,17 +155,30 @@ class GoogleNews:
         """
         results = []
         try:
-            self.url = "https://www.google.com/search?q={}&lr=lang_{}&tbm=nws&start={}".format(
-                self.__key,
-                self.__lang,
-                (10 * (page - 1))
-            )
-            # if self.__start != "" and self.__end != "":
-            #     self.url = "https://www.google.com/search?q={}&lr=lang_{}&biw=1920&bih=976&source=lnt&&tbs=lr:lang_1{},cdr:1,cd_min:{},cd_max:{},sbd:1&tbm=nws&start={}".format(self.__key,self.__lang,self.__lang,self.__start,self.__end,(10 * (page - 1)))
-            # elif self.__period != "":
-            #     self.url = "https://www.google.com/search?q={}&lr=lang_{}&biw=1920&bih=976&source=lnt&&tbs=lr:lang_1{},qdr:{},,sbd:1&tbm=nws&start={}".format(self.__key,self.__lang,self.__lang,self.__period,(10 * (page - 1))) 
-            # else:
-            #     self.url = "https://www.google.com/search?q={}&lr=lang_{}&biw=1920&bih=976&source=lnt&&tbs=lr:lang_1{},sbd:1&tbm=nws&start={}".format(self.__key,self.__lang,self.__lang,(10 * (page - 1))) 
+            if self.__start != "" and self.__end != "" and self.__sbd != "":
+                self.url = "https://www.google.com/search?q={}&lr=lang_{}&tbm=nws&start={}&tbs=qdr:{},sbd:{},cd_min:{},cd_max:{}".format(
+                    self.__key,
+                    self.__lang,
+                    (10 * (page - 1)),
+                    self.__period,
+                    self.__sbd,
+                    self.__start,
+                    self.__end
+                )
+            elif self.__period != "" and self.__sbd != "":
+                self.url = "https://www.google.com/search?q={}&lr=lang_{}&tbm=nws&start={}&tbs=qdr:{},sbd:{}".format(
+                    self.__key,
+                    self.__lang,
+                    (10 * (page - 1)),
+                    self.__period,
+                    self.__sbd
+                )
+            else:
+                self.url = "https://www.google.com/search?q={}&lr=lang_{}&tbm=nws&start={}".format(
+                    self.__key,
+                    self.__lang,
+                    (10 * (page - 1))
+                )
         except AttributeError:
             raise AttributeError("You need to run a search() before using get_page().")
         try:
@@ -215,12 +229,28 @@ class GoogleNews:
         page = number of the page to be retrieved 
         """
         try:
-            if self.__start != "" and self.__end != "":
-                self.url = "https://www.google.com/search?q={}&lr=lang_{}&biw=1920&bih=976&source=lnt&&tbs=lr:lang_1{},cdr:1,cd_min:{},cd_max:{},sbd:1&tbm=nws&start={}".format(self.__key,self.__lang,self.__lang,self.__start,self.__end,(10 * (page - 1)))
-            elif self.__period != "":
-                self.url = "https://www.google.com/search?q={}&lr=lang_{}&biw=1920&bih=976&source=lnt&&tbs=lr:lang_1{},qdr:{},,sbd:1&tbm=nws&start={}".format(self.__key,self.__lang,self.__lang,self.__period,(10 * (page - 1))) 
+            if self.__start != "" and self.__end != "" and self.__sbd != "":
+                self.url = "https://www.google.com/search?q={}&lr=lang_{}&tbm=nws&start={}&tbs=qdr:{},sbd:{}".format(
+                    self.__key,
+                    self.__lang,
+                    (10 * (page - 1)),
+                    self.__period,
+                    self.__sbd
+                )
+            elif self.__period != "" and self.__sbd != "":
+                self.url = "https://www.google.com/search?q={}&lr=lang_{}&tbm=nws&start={}&tbs=qdr:{},sbd:{}".format(
+                    self.__key,
+                    self.__lang,
+                    (10 * (page - 1)),
+                    self.__period,
+                    self.__sbd
+                )
             else:
-                self.url = "https://www.google.com/search?q={}&lr=lang_{}&biw=1920&bih=976&source=lnt&&tbs=lr:lang_1{},sbd:1&tbm=nws&start={}".format(self.__key,self.__lang,self.__lang,(10 * (page - 1))) 
+                self.url = "https://www.google.com/search?q={}&lr=lang_{}&tbm=nws&start={}".format(
+                    self.__key,
+                    self.__lang,
+                    (10 * (page - 1))
+                )
         except AttributeError:
             raise AttributeError("You need to run a search() before using get_page().")
         try:
